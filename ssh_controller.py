@@ -43,13 +43,24 @@ while running:
 
             # Control the Roomba using AWSD keys
             if command == "a":
-                roomba.spin_left(100)
+                roomba.spin_left(300)
             elif command == "d":
-                roomba.spin_right(100)
+                roomba.spin_right(300)
             elif command == "w":
-                roomba.forward(100)
+                roomba.forward(500)
             elif command == "s":
-                roomba.backward(100)
+                roomba.backward(500)
+            elif command == "e":
+                # Get sensor data
+                reading_sensor_data = True
+                print("press Ctrl+C to stop reading data")
+                while reading_sensor_data:
+                    try:
+                        bumps_and_wheel_drops = roomba.get_sensor_data(7)
+                        print(f"Bumping/Dropping: {bumps_and_wheel_drops}")
+                        time.sleep(1)
+                    except KeyboardInterrupt:
+                        reading_sensor_data = False
             elif command == "q":
                 running = False
             else:

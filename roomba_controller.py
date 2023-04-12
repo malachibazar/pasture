@@ -1,3 +1,4 @@
+import struct
 import time
 import serial
 
@@ -52,3 +53,32 @@ class RoombaController:
 
     def close(self):
         self.ser.close()
+
+    
+    def get_sensor_data(self, sensor_packet_id):
+        self.send_byte(142)  # Send "Sensors" command (opcode 142)
+        self.send_byte(sensor_packet_id)
+
+        packet_length = self._get_packet_length(sensor_packet_id)
+        sensor_data = self.ser.read(packet_length)
+        return self._parse_sensor_data(sensor_packet_id, sensor_data)
+
+    def _get_packet_length(self, sensor_packet_id):
+        packet_lengths = {
+            7: 1,
+            13: 1,
+            43: 2,
+            # Add more sensor packet IDs and their lengths here
+        }
+        return packet_lengths.get(sensor_packet_id, 0)
+
+    def _parse_sensor_data(self, sensor_packet_id, sensor_data):
+        if sensor_packet_id == 7:  # Bumps and Wheel Drops
+            return struct.unpack('B', sensor_data)[0]
+        elif sensor_packet_id == 13:  # Virtual Wall
+            return struct.unpack('B', sensor_data)[0]
+        elif sensor_packet_id == 43:  # Battery Charge
+            return struct.unpack('>H', sensor_data)[0]
+        # Add more sensor packet IDs and their parsing functions here
+
+        return None

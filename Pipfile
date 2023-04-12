@@ -5,7 +5,8 @@ name = "pypi"
 
 [packages]
 pyserial = "*"
-pygame = "*"
+openai = "*"
+pydantic = "*"
 
 [dev-packages]
 black = "*"
