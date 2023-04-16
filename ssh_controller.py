@@ -4,6 +4,13 @@ import tty
 import termios
 import time
 from roomba_controller import RoombaController
+from picamera2 import Picamera2
+from libcamera import Transform
+
+camera = Picamera2()
+picamera_config = camera.create_still_configuration(transform=Transform(vflip=1))
+camera.start()
+time.sleep(2)
 
 
 def is_key_pressed():
@@ -43,24 +50,20 @@ while running:
 
             # Control the Roomba using AWSD keys
             if command == "a":
-                roomba.spin_left(300)
+                roomba.spin_left(100)
             elif command == "d":
-                roomba.spin_right(300)
+                roomba.spin_right(100)
             elif command == "w":
-                roomba.forward(500)
+                roomba.forward(100)
             elif command == "s":
-                roomba.backward(500)
-            elif command == "e":
-                # Get sensor data
-                reading_sensor_data = True
-                print("press Ctrl+C to stop reading data")
-                while reading_sensor_data:
-                    try:
-                        bumps_and_wheel_drops = roomba.get_sensor_data(7)
-                        print(f"Bumping/Dropping: {bumps_and_wheel_drops}")
-                        time.sleep(1)
-                    except KeyboardInterrupt:
-                        reading_sensor_data = False
+                roomba.backward(100)
+            elif command == "p":
+                print("Taking picture...")
+                camera.switch_mode_and_capture_file(
+                    picamera_config,
+                    f"/home/malachi/pasture/test_images/test_{time.time()}.jpg",
+                )
+                print("Picture taken!")
             elif command == "q":
                 running = False
             else:
